@@ -1,4 +1,4 @@
-package com.omnicloud.omnicloud;
+package com.omnicloud;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

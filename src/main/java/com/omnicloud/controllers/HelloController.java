@@ -9,7 +9,6 @@ public class HelloController {
 
     @GetMapping("/hello")
     public Mono<String> hello() {
-        // Spicy addition: timestamp + small motivational message
         return Mono.just("OmniCloud Backend Ready! 🚀 Time: " + System.currentTimeMillis());
     }
 }
