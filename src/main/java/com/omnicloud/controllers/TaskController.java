@@ -14,7 +14,7 @@ public class TaskController {
     @Autowired
     private TaskRepository taskRepository;
 
-    // Create new task
+    // Create task
     @PostMapping
     public Mono<Task> createTask(@RequestBody Task task) {
         return taskRepository.save(task);
@@ -26,9 +26,29 @@ public class TaskController {
         return taskRepository.findAll();
     }
 
-    // Get task by id
+    // Get task by ID
     @GetMapping("/{id}")
     public Mono<Task> getTaskById(@PathVariable Long id) {
         return taskRepository.findById(id);
+    }
+
+    // Update task
+    @PutMapping("/{id}")
+    public Mono<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
+
+        return taskRepository.findById(id)
+                .flatMap(task -> {
+                    task.setContent(updatedTask.getContent());
+                    task.setAssignedUserId(updatedTask.getAssignedUserId());
+                    task.setTeamId(updatedTask.getTeamId());
+                    task.setCrdtState(updatedTask.getCrdtState());
+                    return taskRepository.save(task);
+                });
+    }
+
+    // Delete task
+    @DeleteMapping("/{id}")
+    public Mono<Void> deleteTask(@PathVariable Long id) {
+        return taskRepository.deleteById(id);
     }
 }
