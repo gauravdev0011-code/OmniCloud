@@ -44,9 +44,8 @@ public class TaskController {
 
         return taskRepository.save(task)
                 .doOnSuccess(savedTask ->
-                        eventService.broadcast(
-                                "TASK_CREATED:" + savedTask.getId()
-                        ));
+                        eventService.broadcast(savedTask.getTeamId(),
+                                "TASK_CREATED:" + savedTask.getId()));
     }
 
     // -----------------------------
@@ -65,9 +64,8 @@ public class TaskController {
 
                     return taskRepository.save(task)
                             .doOnSuccess(t ->
-                                    eventService.broadcast(
-                                            "TASK_UPDATED:" + t.getId()
-                                    ));
+                                    eventService.broadcast(t.getTeamId(),
+                                            "TASK_UPDATED:" + t.getId()));
                 });
     }
 
@@ -77,10 +75,12 @@ public class TaskController {
     @DeleteMapping("/{id}")
     public Mono<Void> deleteTask(@PathVariable Long id) {
 
-        return taskRepository.deleteById(id)
-                .doOnSuccess(v ->
-                        eventService.broadcast(
-                                "TASK_DELETED:" + id
-                        ));
+        return taskRepository.findById(id)
+                .flatMap(task ->
+                        taskRepository.delete(task)
+                                .doOnSuccess(v ->
+                                        eventService.broadcast(task.getTeamId(),
+                                                "TASK_DELETED:" + id))
+                );
     }
 }
