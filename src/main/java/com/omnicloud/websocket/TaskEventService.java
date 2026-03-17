@@ -3,17 +3,23 @@ package com.omnicloud.websocket;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Sinks;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Service
 public class TaskEventService {
 
-    private final Sinks.Many<String> sink =
-            Sinks.many().multicast().directBestEffort();
+    // One sink per team
+    private final Map<Long, Sinks.Many<String>> teamSinks = new ConcurrentHashMap<>();
 
-    public void broadcast(String message) {
-        sink.tryEmitNext(message);
+    // Get sink for team, create if not exists
+    public Sinks.Many<String> getSink(Long teamId) {
+        return teamSinks.computeIfAbsent(teamId,
+                id -> Sinks.many().multicast().directBestEffort());
     }
 
-    public Sinks.Many<String> getSink() {
-        return sink;
+    // Broadcast message to specific team
+    public void broadcast(Long teamId, String message) {
+        getSink(teamId).tryEmitNext(message);
     }
 }
