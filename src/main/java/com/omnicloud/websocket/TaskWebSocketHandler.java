@@ -6,6 +6,8 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
+
 @Component
 public class TaskWebSocketHandler implements WebSocketHandler {
 
@@ -18,15 +20,17 @@ public class TaskWebSocketHandler implements WebSocketHandler {
     @Override
     public Mono<Void> handle(WebSocketSession session) {
 
-        Flux<String> output = eventService.getSink().asFlux();
+        // Expect URL: /ws/tasks?teamId=1
+        URI uri = session.getHandshakeInfo().getUri();
+        String query = uri.getQuery(); // "teamId=1"
+        Long teamId = Long.parseLong(query.split("=")[1]);
 
-        return session.send(
-                output.map(session::textMessage)
-        ).and(
-                session.receive()
+        Flux<String> output = eventService.getSink(teamId).asFlux();
+
+        return session.send(output.map(session::textMessage))
+                .and(session.receive()
                         .map(msg -> msg.getPayloadAsText())
-                        .doOnNext(eventService::broadcast)
-                        .then()
-        );
+                        .doOnNext(msg -> eventService.broadcast(teamId, msg))
+                        .then());
     }
 }
