@@ -8,15 +8,15 @@ import reactor.core.publisher.Sinks;
 @Component
 public class TaskEventPublisher {
 
-    // Multicast sink for real-time events
-    private final Sinks.Many<Task> sink =
+    private final Sinks.Many<TaskEvent> sink =
             Sinks.many().multicast().onBackpressureBuffer();
 
-    public void publish(Task task) {
-        sink.tryEmitNext(task);
+    // publish CREATE / UPDATE / DELETE
+    public void publish(TaskEvent event) {
+        sink.tryEmitNext(event);
     }
 
-    public Flux<Task> getTaskStream() {
+    public Flux<TaskEvent> getTaskStream() {
         return sink.asFlux();
     }
 }
