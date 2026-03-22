@@ -1,6 +1,6 @@
 package com.omnicloud.controllers;
 
-import com.omnicloud.models.Task;
+import com.omnicloud.realtime.TaskEvent;
 import com.omnicloud.realtime.TaskEventPublisher;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +17,9 @@ public class TaskStreamController {
         this.publisher = publisher;
     }
 
-    // Server-Sent Events stream
     @GetMapping(value = "/tasks/stream",
             produces = "text/event-stream")
-    public Flux<Task> streamTasks() {
+    public Flux<TaskEvent> streamTasks() {
         return publisher.getTaskStream();
     }
 }
