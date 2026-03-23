@@ -6,7 +6,6 @@ import com.omnicloud.realtime.TaskEvent;
 import com.omnicloud.realtime.TaskEventPublisher;
 
 import org.springframework.stereotype.Service;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -34,12 +33,11 @@ public class TaskService {
         return taskRepository.save(task)
                 .doOnSuccess(saved ->
                         publisher.publish(
-                                new TaskEvent("CREATE", saved)
+                                new TaskEvent("CREATE", saved, saved.getAssignedUserId())
                         ));
     }
 
     public Mono<Task> updateTask(Long id, Task updatedTask) {
-
         return taskRepository.findById(id)
                 .flatMap(existing -> {
                     existing.setContent(updatedTask.getContent());
@@ -50,18 +48,17 @@ public class TaskService {
                 })
                 .doOnSuccess(saved ->
                         publisher.publish(
-                                new TaskEvent("UPDATE", saved)
+                                new TaskEvent("UPDATE", saved, saved.getAssignedUserId())
                         ));
     }
 
     public Mono<Void> deleteTask(Long id) {
-
         return taskRepository.findById(id)
                 .flatMap(task ->
                         taskRepository.deleteById(id)
                                 .doOnSuccess(v ->
                                         publisher.publish(
-                                                new TaskEvent("DELETE", task)
+                                                new TaskEvent("DELETE", task, task.getAssignedUserId())
                                         )
                                 )
                 );
