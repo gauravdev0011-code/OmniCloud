@@ -1,32 +1,27 @@
-package com.omnicloud.realtime;
+package com.omnicloud.websocket;
 
-import com.omnicloud.models.Task;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.omnicloud.realtime.TaskEvent;
 
-public class TaskEvent {
+import org.springframework.stereotype.Service;
 
-    private String type; // CREATE, UPDATE, DELETE
-    private Task task;
-    private Long performedByUserId;
-    private long timestamp;
+@Service
+public class TaskEventService {
 
-    public TaskEvent() {}
+    private final TaskWebSocketHandler handler;
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    public TaskEvent(String type, Task task, Long performedByUserId) {
-        this.type = type;
-        this.task = task;
-        this.performedByUserId = performedByUserId;
-        this.timestamp = System.currentTimeMillis();
+    public TaskEventService(TaskWebSocketHandler handler) {
+        this.handler = handler;
     }
 
-    // Getters
-    public String getType() { return type; }
-    public Task getTask() { return task; }
-    public Long getPerformedByUserId() { return performedByUserId; }
-    public long getTimestamp() { return timestamp; }
-
-    // Setters
-    public void setType(String type) { this.type = type; }
-    public void setTask(Task task) { this.task = task; }
-    public void setPerformedByUserId(Long performedByUserId) { this.performedByUserId = performedByUserId; }
-    public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+    // send event to all connected users
+    public void publish(TaskEvent event) {
+        try {
+            String json = mapper.writeValueAsString(event);
+            handler.broadcast(json);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
