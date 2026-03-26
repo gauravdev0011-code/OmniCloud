@@ -1,36 +1,30 @@
 package com.omnicloud.websocket;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
+import org.springframework.web.reactive.socket.WebSocketMessage;
+
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 
-import java.net.URI;
-
-@Component
 public class TaskWebSocketHandler implements WebSocketHandler {
 
-    private final TaskEventService eventService;
+    // Shared stream for all connected clients
+    private final Sinks.Many<String> sink =
+            Sinks.many().multicast().onBackpressureBuffer();
 
-    public TaskWebSocketHandler(TaskEventService eventService) {
-        this.eventService = eventService;
+    // called by service when event happens
+    public void broadcast(String message) {
+        sink.tryEmitNext(message);
     }
 
     @Override
-    public Mono<Void> handle(WebSocketSession session) {
+    public Flux<Void> handle(WebSocketSession session) {
 
-        // Expect URL: /ws/tasks?teamId=1
-        URI uri = session.getHandshakeInfo().getUri();
-        String query = uri.getQuery(); // "teamId=1"
-        Long teamId = Long.parseLong(query.split("=")[1]);
+        Flux<WebSocketMessage> output =
+                sink.asFlux()
+                        .map(session::textMessage);
 
-        Flux<String> output = eventService.getSink(teamId).asFlux();
-
-        return session.send(output.map(session::textMessage))
-                .and(session.receive()
-                        .map(msg -> msg.getPayloadAsText())
-                        .doOnNext(msg -> eventService.broadcast(teamId, msg))
-                        .then());
+        return session.send(output);
     }
 }
