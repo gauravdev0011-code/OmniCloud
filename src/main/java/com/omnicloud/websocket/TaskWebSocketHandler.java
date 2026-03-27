@@ -1,5 +1,6 @@
 package com.omnicloud.websocket;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.springframework.web.reactive.socket.WebSocketMessage;
@@ -7,22 +8,43 @@ import org.springframework.web.reactive.socket.WebSocketMessage;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Component
 public class TaskWebSocketHandler implements WebSocketHandler {
 
-    // Shared stream for all connected clients
-    private final Sinks.Many<String> sink =
-            Sinks.many().multicast().onBackpressureBuffer();
+    // teamId -> event stream
+    private final Map<Long, Sinks.Many<String>> teamSinks =
+            new ConcurrentHashMap<>();
 
-    // called by service when event happens
-    public void broadcast(String message) {
-        sink.tryEmitNext(message);
+    private Sinks.Many<String> getSink(Long teamId) {
+        return teamSinks.computeIfAbsent(
+                teamId,
+                id -> Sinks.many().multicast().onBackpressureBuffer()
+        );
+    }
+
+    // broadcast only to one team
+    public void broadcast(Long teamId, String message) {
+        getSink(teamId).tryEmitNext(message);
     }
 
     @Override
     public Flux<Void> handle(WebSocketSession session) {
 
+        // client connects: ws://localhost:8080/ws/tasks?teamId=1
+        String teamParam =
+                session.getHandshakeInfo()
+                        .getUri()
+                        .getQuery()
+                        .split("=")[1];
+
+        Long teamId = Long.parseLong(teamParam);
+
         Flux<WebSocketMessage> output =
-                sink.asFlux()
+                getSink(teamId)
+                        .asFlux()
                         .map(session::textMessage);
 
         return session.send(output);
