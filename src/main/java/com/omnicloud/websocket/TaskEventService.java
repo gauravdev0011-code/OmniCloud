@@ -1,25 +1,32 @@
 package com.omnicloud.websocket;
 
-import org.springframework.stereotype.Service;
-import reactor.core.publisher.Sinks;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.omnicloud.realtime.TaskEvent;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TaskEventService {
 
-    // One sink per team
-    private final Map<Long, Sinks.Many<String>> teamSinks = new ConcurrentHashMap<>();
+    private final TaskWebSocketHandler handler;
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    // Get sink for team, create if not exists
-    public Sinks.Many<String> getSink(Long teamId) {
-        return teamSinks.computeIfAbsent(teamId,
-                id -> Sinks.many().multicast().directBestEffort());
+    public TaskEventService(TaskWebSocketHandler handler) {
+        this.handler = handler;
     }
 
-    // Broadcast message to specific team
-    public void broadcast(Long teamId, String message) {
-        getSink(teamId).tryEmitNext(message);
+    public void publish(TaskEvent event) {
+
+        try {
+            String json = mapper.writeValueAsString(event);
+
+            if (event.getTask() != null) {
+                Long teamId = event.getTask().getTeamId();
+                handler.broadcast(teamId, json);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
