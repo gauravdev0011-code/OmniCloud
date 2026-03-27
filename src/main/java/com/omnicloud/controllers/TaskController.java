@@ -7,6 +7,7 @@ import com.omnicloud.websocket.TaskEventService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -23,47 +24,44 @@ public class TaskController {
         this.eventService = eventService;
     }
 
-    // Fetch all tasks
+    // GET all tasks
     @GetMapping
     public Flux<Task> getAllTasks() {
-        return taskService.getAllTasks()
-                .switchIfEmpty(Flux.empty()); // ensures empty list instead of null
+        return taskService.getAllTasks();
     }
 
-    // Create a new task
+    // CREATE task
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Task> createTask(@RequestBody Task task) {
         return taskService.createTask(task)
-                .doOnSuccess(saved -> publishEvent("CREATE", saved));
+                .doOnSuccess(saved ->
+                        publishEvent(TaskEvent.Type.CREATE, saved));
     }
 
-    // Update a task
+    // UPDATE task
     @PutMapping("/{id}")
     public Mono<Task> updateTask(@PathVariable Long id,
                                  @RequestBody Task task) {
+
         return taskService.updateTask(id, task)
-                .flatMap(updated -> {
-                    if (updated != null) {
-                        publishEvent("UPDATE", updated);
-                        return Mono.just(updated);
-                    }
-                    return Mono.empty();
-                });
+                .doOnSuccess(updated ->
+                        publishEvent(TaskEvent.Type.UPDATE, updated));
     }
 
-    // Delete a task
+    // DELETE task
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> deleteTask(@PathVariable Long id) {
+
         return taskService.deleteTask(id)
-                .doOnSuccess(v -> publishEvent("DELETE", null));
+                .doOnSuccess(v ->
+                        publishEvent(TaskEvent.Type.DELETE, null));
     }
 
     // Centralized event publishing
-    private void publishEvent(String action, Task task) {
-        // In real app, fetch userId dynamically from auth context
-        Long userId = 1L;
-        eventService.publish(new TaskEvent(action, task, userId));
+    private void publishEvent(TaskEvent.Type type, Task task) {
+        Long userId = 1L; // replace later with authenticated user
+        eventService.publish(new TaskEvent(type, task, userId));
     }
 }
