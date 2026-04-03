@@ -1,4 +1,4 @@
-package com.omnicloud.controllers;
+package com.omnicloud.exceptions.controllers;
 
 import com.omnicloud.realtime.TaskEvent;
 import com.omnicloud.realtime.TaskEventPublisher;

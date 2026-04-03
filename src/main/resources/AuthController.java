@@ -1,4 +1,4 @@
-package com.omnicloud.controllers;
+package com.omnicloud.exceptions.controllers;
 
 import com.omnicloud.models.User;
 import com.omnicloud.services.UserService;
@@ -11,14 +11,24 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final UserService service;
+    private final UserService userService;
 
-    public AuthController(UserService service) {
-        this.service = service;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
+    // Register user
     @PostMapping("/register")
     public Mono<User> register(@RequestBody User user) {
-        return service.register(user);
+        return userService.register(user);
+    }
+
+    // Login user
+    @PostMapping("/login")
+    public Mono<User> login(@RequestBody User request) {
+        return userService.login(
+                request.getEmail(),
+                request.getPassword()
+        );
     }
 }
