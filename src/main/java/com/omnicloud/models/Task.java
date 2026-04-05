@@ -1,45 +1,47 @@
-package com.omnicloud.models;
+package com.omnicloud.omnicloud.models;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
-@Table("tasks")
+@Entity
+@Table(name = "tasks")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Task {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
-    private Long assignedUserId;
-    private Long teamId;
-    private String crdtState;
+    @Column(nullable = false)
+    private String title;
 
-    public Task() {}
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-    public Task(String content, Long assignedUserId,
-                Long teamId, String crdtState) {
-        this.content = content;
-        this.assignedUserId = assignedUserId;
-        this.teamId = teamId;
-        this.crdtState = crdtState;
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private TaskStatus status = TaskStatus.TODO;
+
+    private String assignedTo;
+    private String createdBy;
+
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
-
-    public Long getAssignedUserId() { return assignedUserId; }
-    public void setAssignedUserId(Long assignedUserId) {
-        this.assignedUserId = assignedUserId;
-    }
-
-    public Long getTeamId() { return teamId; }
-    public void setTeamId(Long teamId) { this.teamId = teamId; }
-
-    public String getCrdtState() { return crdtState; }
-    public void setCrdtState(String crdtState) {
-        this.crdtState = crdtState;
+    public enum TaskStatus {
+        TODO, IN_PROGRESS, DONE, CANCELLED
     }
 }
