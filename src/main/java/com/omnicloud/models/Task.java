@@ -5,43 +5,29 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "teams")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Task {
+public class Team {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
+    @Column(nullable = false, unique = true)
+    private String name;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Enumerated(EnumType.STRING)
+    @ElementCollection
+    @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
+    @Column(name = "member_username")
     @Builder.Default
-    private TaskStatus status = TaskStatus.TODO;
-
-    private String assignedTo;
-    private String createdBy;
-
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt;
-
-    @PreUpdate
-    public void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public enum TaskStatus {
-        TODO, IN_PROGRESS, DONE, CANCELLED
-    }
+    private List<String> members = new ArrayList<>();
 }

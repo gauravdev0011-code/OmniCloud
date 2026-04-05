@@ -1,9 +1,33 @@
-FROM eclipse-temurin:17-jdk-alpine
+package com.omnicloud.omnicloud.models;
 
-WORKDIR /app
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
-COPY target/omnicloud-0.0.1-SNAPSHOT.jar app.jar
+@Entity
+@Table(name = "teams")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Team {
 
-EXPOSE 8080
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    private String description;
+
+    @ElementCollection
+    @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
+    @Column(name = "member_username")
+    @Builder.Default
+    private List<String> members = new ArrayList<>();
+}
