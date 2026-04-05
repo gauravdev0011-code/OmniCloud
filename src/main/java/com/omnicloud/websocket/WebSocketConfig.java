@@ -1,27 +1,22 @@
 package com.omnicloud.websocket;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
-import org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter;
-
-import java.util.Map;
+import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
-public class WebSocketConfig {
+@EnableWebSocket
+public class WebSocketConfig implements WebSocketConfigurer {
 
-    @Bean
-    public HandlerMapping webSocketMapping(TaskWebSocketHandler handler) {
+    private final TaskWebSocketHandler handler;
 
-        return new SimpleUrlHandlerMapping(
-                Map.of("/ws/tasks", handler),
-                1
-        );
+    public WebSocketConfig(TaskWebSocketHandler handler) {
+        this.handler = handler;
     }
 
-    @Bean
-    public WebSocketHandlerAdapter handlerAdapter() {
-        return new WebSocketHandlerAdapter();
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+
+        registry.addHandler(handler, "/ws/tasks")
+                .setAllowedOrigins("*");
     }
 }
