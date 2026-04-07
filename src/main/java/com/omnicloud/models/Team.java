@@ -1,11 +1,30 @@
-package com.omnicloud.omnicloud;
+package com.omnicloud.models;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
 
-@SpringBootApplication(scanBasePackages = "com.omnicloud")
-public class OmniCloudApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(OmniCloudApplication.class, args);
-    }
+@Entity
+@Table(name = "teams")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Team {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    private String description;
+
+    @ElementCollection
+    @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
+    @Column(name = "member_username")
+    @Builder.Default
+    private List<String> members = new ArrayList<>();
 }
