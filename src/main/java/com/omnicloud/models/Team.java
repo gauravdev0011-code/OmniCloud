@@ -1,4 +1,11 @@
-package com.omnicloud.models;
+package com.omnicloud.omnicloud;
 
-public class Team {
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication(scanBasePackages = "com.omnicloud")
+public class OmniCloudApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(OmniCloudApplication.class, args);
+    }
 }
