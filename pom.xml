@@ -15,7 +15,7 @@
     <artifactId>omnicloud</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>OmniCloud</name>
-    <description>OmniCloud Task Management with WebSocket and JWT</description>
+    <description>Distributed real-time collaboration and analytics platform</description>
 
     <properties>
         <java.version>17</java.version>
