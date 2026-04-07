@@ -1,33 +1,44 @@
-package com.omnicloud.omnicloud.models;
+package com.omnicloud.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "teams")
+@Table(name = "tasks")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Team {
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    @Column(nullable = false)
+    private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @ElementCollection
-    @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
-    @Column(name = "member_username")
+    @Enumerated(EnumType.STRING)
     @Builder.Default
-    private List<String> members = new ArrayList<>();
+    private TaskStatus status = TaskStatus.TODO;
+
+    private String assignedTo;
+    private String createdBy;
+
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public enum TaskStatus {
+        TODO, IN_PROGRESS, DONE, CANCELLED
+    }
 }
