@@ -16,6 +16,8 @@ spring:
       ddl-auto: create-drop
     show-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
+  main:
+    allow-bean-definition-overriding: true
 
 jwt:
   secret: omnicloud-super-secret-key-that-is-at-least-256-bits-long-for-hs256
