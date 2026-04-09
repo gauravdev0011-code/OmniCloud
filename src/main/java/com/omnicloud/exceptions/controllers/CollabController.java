@@ -1,16 +1,41 @@
-package com.omnicloud.utils;
+package com.omnicloud.exceptions.controllers;
 
-import java.util.List;
+import com.omnicloud.websocket.PresenceService;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-public class CRDT {
+import java.security.Principal;
+import java.util.Map;
+import java.util.Set;
 
-    // Merge multiple edits, highlight conflicts
-    public static String mergeEdits(List<String> edits) {
-        if (edits.size() == 1) return edits.get(0);
-        StringBuilder sb = new StringBuilder();
-        for (String edit : edits) {
-            sb.append("<<").append(edit).append(">> ");
-        }
-        return sb.toString().trim();
+@Controller
+@RequestMapping("/api/collab")
+public class CollabController {
+
+    private final PresenceService presenceService;
+
+    // constructor injection without Lombok
+    public CollabController(PresenceService presenceService) {
+        this.presenceService = presenceService;
+    }
+
+    // when someone is typing, tell everyone
+    @MessageMapping("/typing")
+    @SendTo("/topic/presence")
+    public Map<String, String> typing(Principal principal) {
+        String username = principal != null ? principal.getName() : "anonymous";
+        presenceService.userTyping(username);
+        return Map.of("type", "TYPING", "username", username);
+    }
+
+    // get list of online users
+    @GetMapping("/online")
+    @ResponseBody
+    public Set<String> online() {
+        return presenceService.getOnlineUsers();
     }
 }
