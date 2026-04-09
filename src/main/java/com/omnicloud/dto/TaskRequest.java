@@ -18,15 +18,42 @@ public class TaskRequest {
 
     public TaskRequest() {}
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public TaskRequest(String content, Long assignedUserId, Long teamId, String crdtState) {
+        this.content = content;
+        this.assignedUserId = assignedUserId;
+        this.teamId = teamId;
+        this.crdtState = crdtState;
+    }
 
-    public Long getAssignedUserId() { return assignedUserId; }
-    public void setAssignedUserId(Long assignedUserId) { this.assignedUserId = assignedUserId; }
+    public String getContent() {
+        return content;
+    }
 
-    public Long getTeamId() { return teamId; }
-    public void setTeamId(Long teamId) { this.teamId = teamId; }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-    public String getCrdtState() { return crdtState; }
-    public void setCrdtState(String crdtState) { this.crdtState = crdtState; }
+    public Long getAssignedUserId() {
+        return assignedUserId;
+    }
+
+    public void setAssignedUserId(Long assignedUserId) {
+        this.assignedUserId = assignedUserId;
+    }
+
+    public Long getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(Long teamId) {
+        this.teamId = teamId;
+    }
+
+    public String getCrdtState() {
+        return crdtState;
+    }
+
+    public void setCrdtState(String crdtState) {
+        this.crdtState = crdtState;
+    }
 }

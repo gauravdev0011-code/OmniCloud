@@ -18,21 +18,21 @@ public class CollabController {
 
     private final PresenceService presenceService;
 
-    // constructor injection without Lombok
     public CollabController(PresenceService presenceService) {
         this.presenceService = presenceService;
     }
 
-    // when someone is typing, tell everyone
     @MessageMapping("/typing")
     @SendTo("/topic/presence")
     public Map<String, String> typing(Principal principal) {
         String username = principal != null ? principal.getName() : "anonymous";
         presenceService.userTyping(username);
-        return Map.of("type", "TYPING", "username", username);
+        return Map.of(
+                "type", "TYPING",
+                "username", username
+        );
     }
 
-    // get list of online users
     @GetMapping("/online")
     @ResponseBody
     public Set<String> online() {
