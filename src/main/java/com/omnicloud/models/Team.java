@@ -25,7 +25,7 @@ public class Team {
 
     private String description;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
     @Column(name = "member_username")
     @Builder.Default
