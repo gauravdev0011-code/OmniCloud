@@ -23,15 +23,23 @@ public class Task {
     private String description;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     @Builder.Default
     private TaskStatus status = TaskStatus.TODO;
 
     private String assignedTo;
     private String createdBy;
 
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
 
     @PreUpdate
     public void preUpdate() {
