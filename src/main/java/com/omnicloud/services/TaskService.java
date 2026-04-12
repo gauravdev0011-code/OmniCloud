@@ -40,12 +40,18 @@ public class TaskService {
         logger.info("Creating task");
 
         return taskRepository.save(task)
-                .doOnSuccess(publisher::publish);
+                .doOnSuccess(savedTask -> {
+                    if (savedTask != null) {
+                        publisher.publish(savedTask);
+                    }
+                });
     }
 
     public Mono<Task> updateTask(Long id, Task updatedTask) {
+        logger.info("Updating task {}", id);
 
         return taskRepository.findById(id)
+                .switchIfEmpty(Mono.error(new RuntimeException("Task not found with id " + id)))
                 .flatMap(existing -> {
                     existing.setContent(updatedTask.getContent());
                     existing.setAssignedUserId(updatedTask.getAssignedUserId());
@@ -53,7 +59,11 @@ public class TaskService {
                     existing.setCrdtState(updatedTask.getCrdtState());
                     return taskRepository.save(existing);
                 })
-                .doOnSuccess(publisher::publish);
+                .doOnSuccess(updated -> {
+                    if (updated != null) {
+                        publisher.publish(updated);
+                    }
+                });
     }
 
     public Mono<Void> deleteTask(Long id) {
