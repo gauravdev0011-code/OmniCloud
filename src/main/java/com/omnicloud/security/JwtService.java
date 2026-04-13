@@ -16,11 +16,11 @@ public class JwtService {
         return jwtUtil.generateToken(userId.toString());
     }
 
-    public boolean validate(String token) {
+    public boolean validateToken(String token) {
         return jwtUtil.validateToken(token);
     }
 
     public Long extractUserId(String token) {
-        return Long.parseLong(jwtUtil.extractUsername(token));
+        return Long.valueOf(jwtUtil.extractUsername(token));
     }
 }
