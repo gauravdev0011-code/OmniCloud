@@ -14,6 +14,7 @@ public class TaskRequest {
     @NotNull(message = "Team ID is required")
     private Long teamId;
 
+    // optional field (kept nullable by design)
     private String crdtState;
 
     public TaskRequest() {}
