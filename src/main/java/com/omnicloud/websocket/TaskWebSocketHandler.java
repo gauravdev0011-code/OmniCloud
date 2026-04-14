@@ -1,9 +1,13 @@
 package com.omnicloud.websocket;
 
-import org.springframework.web.socket.*;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TaskWebSocketHandler extends TextWebSocketHandler {
 
@@ -19,9 +23,11 @@ public class TaskWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session,
                                      TextMessage message) throws Exception {
 
-        for (WebSocketSession s : sessions) {
-            if (s.isOpen()) {
-                s.sendMessage(message);
+        synchronized (sessions) {
+            for (WebSocketSession s : sessions) {
+                if (s.isOpen()) {
+                    s.sendMessage(message);
+                }
             }
         }
     }
