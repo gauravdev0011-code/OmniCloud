@@ -35,8 +35,10 @@ public class TaskController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Task> createTask(@RequestBody Task task) {
         return taskService.createTask(task)
-                .doOnSuccess(saved ->
-                        publishEvent(TaskEvent.Type.CREATE, saved));
+                .flatMap(saved -> {
+                    publishEvent(TaskEvent.Type.CREATE, saved);
+                    return Mono.just(saved);
+                });
     }
 
     // UPDATE task
@@ -45,8 +47,10 @@ public class TaskController {
                                  @RequestBody Task task) {
 
         return taskService.updateTask(id, task)
-                .doOnSuccess(updated ->
-                        publishEvent(TaskEvent.Type.UPDATE, updated));
+                .flatMap(updated -> {
+                    publishEvent(TaskEvent.Type.UPDATE, updated);
+                    return Mono.just(updated);
+                });
     }
 
     // DELETE task
@@ -55,13 +59,19 @@ public class TaskController {
     public Mono<Void> deleteTask(@PathVariable Long id) {
 
         return taskService.deleteTask(id)
-                .doOnSuccess(v ->
-                        publishEvent(TaskEvent.Type.DELETE, null));
+                .then(Mono.fromRunnable(() ->
+                        publishEvent(TaskEvent.Type.DELETE, new Task(id))
+                ));
     }
 
     // Centralized event publishing
     private void publishEvent(TaskEvent.Type type, Task task) {
-        Long userId = 1L; // replace later with authenticated user
+        Long userId = getAuthenticatedUserId();
         eventService.publish(new TaskEvent(type, task, userId));
+    }
+
+    // Placeholder for real auth integration
+    private Long getAuthenticatedUserId() {
+        return 1L; // TODO: replace with Spring Security context
     }
 }
