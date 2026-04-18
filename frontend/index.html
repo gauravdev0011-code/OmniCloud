@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>OmniCloud</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -9,10 +8,7 @@
 
 <div class="container">
 
-    <header>
-        <h1>OmniCloud</h1>
-        <p>Real-time collaborative tasks</p>
-    </header>
+    <h1>OmniCloud</h1>
 
     <div class="card">
         <input id="title" placeholder="Task title">
@@ -22,6 +18,8 @@
 
     <div class="card">
         <h2>Tasks</h2>
+        <div id="loading">Loading...</div>
+        <div id="empty" style="display:none;">No tasks yet</div>
         <ul id="tasks"></ul>
     </div>
 

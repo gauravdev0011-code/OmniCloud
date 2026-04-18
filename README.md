@@ -1,32 +1,102 @@
-# OmniCloud — Distributed Real-Time Collaboration Platform
+# OmniCloud
 
-OmniCloud is a reactive Java backend designed for real-time multi-user collaboration systems similar to Google Docs or Notion backends.
+A real-time task management application built using Java Spring Boot and WebSocket.
 
-## 🚀 Features
+---
 
-- Reactive REST APIs using Spring WebFlux
-- Real-time task updates via Server-Sent Events
-- Multi-user collaboration architecture
-- CRDT-based conflict resolution foundation
-- PostgreSQL reactive database (R2DBC)
-- Docker-ready deployment
-- Modular microservice-ready structure
+## Features
 
-## 🧱 Tech Stack
+* Create, update, and delete tasks
+* Real-time updates (no refresh needed)
+* Clean UI
+* REST API backend
 
-- Java 17
-- Spring Boot + WebFlux
-- PostgreSQL (R2DBC)
-- Reactive Streams (Flux / Mono)
-- Docker
-- GitHub CI-ready structure
+---
 
-## 📡 Architecture
+## Tech Stack
 
-Client → REST API → Reactive Service Layer → Database  
-↘ Real-Time Event Stream
+**Backend**
 
-## ▶ Run Locally
+* Java 17
+* Spring Boot
+* Spring Web
+* Spring Data JPA
+* Hibernate
+* H2 Database
+* Maven
 
-```bash
-./mvnw spring-boot:run
+**Frontend**
+
+* HTML
+* CSS
+* JavaScript
+
+**Real-time**
+
+* WebSocket
+
+---
+
+## How to Run
+
+### Backend
+
+```
+cd backend
+mvn spring-boot:run
+```
+
+Runs on:
+
+```
+http://localhost:8080
+```
+
+---
+
+### Frontend
+
+Open:
+
+```
+frontend/index.html
+```
+
+---
+
+## How It Works
+
+* Open frontend in 2 tabs
+* Add or edit task in one tab
+* Changes appear instantly in other tab
+
+---
+
+## API
+
+* GET /api/tasks
+* POST /api/tasks
+* PUT /api/tasks/{id}
+* DELETE /api/tasks/{id}
+
+---
+
+## WebSocket
+
+```
+ws://localhost:8080/ws/tasks
+```
+
+---
+
+## Future Improvements
+
+* Authentication (JWT)
+* PostgreSQL database
+* React frontend
+
+---
+
+## Author
+
+Gaurav Dev

@@ -23,23 +23,34 @@ public class TaskService {
         this.socketHandler = socketHandler;
     }
 
+    // GET ALL TASKS
     public List<Task> getAll() {
         logger.info("Fetching all tasks");
         return repository.findAll();
     }
 
+    // CREATE TASK (WITH REAL-TIME BROADCAST)
     public Task create(Task task) {
         logger.info("Creating task: {}", task.getTitle());
 
         Task saved = repository.save(task);
 
-        // 🔥 REAL-TIME BROADCAST
-        socketHandler.broadcast("NEW_TASK:" + saved.getTitle());
+        String message = String.format(
+                "{\"type\":\"CREATE\",\"id\":%d,\"title\":\"%s\",\"description\":\"%s\"}",
+                saved.getId(),
+                saved.getTitle(),
+                saved.getDescription()
+        );
+
+        socketHandler.broadcast(message);
 
         return saved;
     }
 
+    // UPDATE TASK
     public Task update(Long id, Task updatedTask) {
+        logger.info("Updating task with id: {}", id);
+
         Task task = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
@@ -49,7 +60,9 @@ public class TaskService {
         return repository.save(task);
     }
 
+    // DELETE TASK
     public void delete(Long id) {
+        logger.info("Deleting task with id: {}", id);
         repository.deleteById(id);
     }
 }
