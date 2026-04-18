@@ -2,13 +2,15 @@ package com.omnicloud.websocket;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 
 @Component
-public class TaskWebSocketHandler implements WebSocketHandler {
+public class TaskWebSocketHandler extends TextWebSocketHandler {
 
-    private final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+    private final Set<WebSocketSession> sessions =
+            Collections.synchronizedSet(new HashSet<>());
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) {
@@ -16,24 +18,21 @@ public class TaskWebSocketHandler implements WebSocketHandler {
     }
 
     @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
-        sessions.forEach(s -> {
-            try {
-                s.sendMessage(message);
-            } catch (Exception ignored) {}
-        });
-    }
-
-    @Override
-    public void handleTransportError(WebSocketSession session, Throwable exception) {}
-
-    @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         sessions.remove(session);
     }
 
-    @Override
-    public boolean supportsPartialMessages() {
-        return false;
+    public void broadcast(String message) {
+        synchronized (sessions) {
+            for (WebSocketSession session : sessions) {
+                try {
+                    if (session.isOpen()) {
+                        session.sendMessage(new TextMessage(message));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
