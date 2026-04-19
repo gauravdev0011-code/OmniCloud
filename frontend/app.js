@@ -1,96 +1,84 @@
-const API = "http://localhost:8080/api/tasks";
+const API_BASE = "https://omnicloud.onrender.com";
+const WS_URL = "wss://omnicloud.onrender.com/ws/tasks";
 
-const list = document.getElementById("tasks");
-const loading = document.getElementById("loading");
-const empty = document.getElementById("empty");
+const list = document.getElementById("taskList");
+const emptyState = document.getElementById("emptyState");
 
-// LOAD TASKS
+// ---------------- LOAD TASKS ----------------
 async function loadTasks() {
-    loading.style.display = "block";
-    empty.style.display = "none";
-
-    const res = await fetch(API);
-    const data = await res.json();
+    const res = await fetch(`${API_BASE}/tasks`);
+    const tasks = await res.json();
 
     list.innerHTML = "";
 
-    loading.style.display = "none";
-
-    if (data.length === 0) {
-        empty.style.display = "block";
-        return;
-    }
-
-    data.forEach(t => renderTask(t));
+    tasks.forEach(addTaskToUI);
+    toggleEmpty(tasks);
 }
 
-// RENDER TASK
-function renderTask(t) {
-    const li = document.createElement("li");
-
-    li.innerHTML = `
-        <strong>${t.title}</strong><br/>
-        <small>${t.description}</small>
-        <div class="actions">
-            <button onclick="editTask(${t.id}, '${t.title}', '${t.description}')">Edit</button>
-            <button onclick="deleteTask(${t.id})">Delete</button>
-        </div>
-    `;
-
-    list.appendChild(li);
-}
-
-// CREATE
+// ---------------- CREATE ----------------
 async function createTask() {
     const title = document.getElementById("title").value;
-    const description = document.getElementById("desc").value;
+    const description = document.getElementById("description").value;
 
     if (!title) return;
 
-    await fetch(API, {
+    await fetch(`${API_BASE}/tasks`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({title, description})
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description })
     });
 
     document.getElementById("title").value = "";
-    document.getElementById("desc").value = "";
-
-    loadTasks();
+    document.getElementById("description").value = "";
 }
 
-// DELETE
+// ---------------- DELETE ----------------
 async function deleteTask(id) {
-    await fetch(`${API}/${id}`, { method: "DELETE" });
-    loadTasks();
-}
-
-// EDIT
-async function editTask(id, title, description) {
-    const newTitle = prompt("Edit title:", title);
-    const newDesc = prompt("Edit description:", description);
-
-    if (!newTitle) return;
-
-    await fetch(`${API}/${id}`, {
-        method: "PUT",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({title: newTitle, description: newDesc})
+    await fetch(`${API_BASE}/tasks/${id}`, {
+        method: "DELETE"
     });
 
     loadTasks();
 }
 
-// WEBSOCKET
-const socket = new WebSocket("ws://localhost:8080/ws/tasks");
+// ---------------- UI ----------------
+function addTaskToUI(task) {
+    const item = document.createElement("li");
 
-socket.onmessage = function (event) {
-    const data = JSON.parse(event.data);
+    item.innerHTML = `
+    <div>
+      <strong>${task.title}</strong><br/>
+      <small>${task.description || ""}</small>
+    </div>
+    <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+  `;
 
-    if (data.type === "CREATE") {
-        loadTasks();
+    list.appendChild(item);
+}
+
+function toggleEmpty(tasks) {
+    emptyState.style.display = tasks.length === 0 ? "block" : "none";
+}
+
+// ---------------- WEBSOCKET ----------------
+const socket = new WebSocket(WS_URL);
+
+socket.onopen = () => {
+    console.log("WebSocket connected");
+};
+
+socket.onmessage = (event) => {
+    try {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "CREATE") {
+            addTaskToUI(data);
+            emptyState.style.display = "none";
+        }
+    } catch (e) {
+        console.log("Invalid WS message");
     }
 };
 
-// INIT
+// ---------------- INIT ----------------
 loadTasks();

@@ -1,52 +1,57 @@
 body {
-    font-family: Inter, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     background: #0f172a;
     color: white;
-    display: flex;
-    justify-content: center;
+    margin: 0;
+    padding: 40px;
 }
 
 .container {
-    width: 600px;
-    margin-top: 50px;
+    max-width: 600px;
+    margin: auto;
 }
 
-.card {
-    background: #1e293b;
-    padding: 20px;
-    border-radius: 10px;
+h1 {
+    text-align: center;
+}
+
+.form {
+    display: flex;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
 input {
-    width: 100%;
+    flex: 1;
     padding: 10px;
-    margin-bottom: 10px;
-    background: #334155;
+    border-radius: 8px;
     border: none;
-    border-radius: 6px;
-    color: white;
 }
 
 button {
-    width: 100%;
-    padding: 10px;
-    background: #3b82f6;
+    padding: 10px 16px;
+    border-radius: 8px;
     border: none;
-    border-radius: 6px;
+    background: #6366f1;
     color: white;
     cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #4f46e5;
 }
 
 li {
-    background: #334155;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 6px;
+    background: #1e293b;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.actions button {
-    margin-top: 5px;
-    margin-right: 5px;
-    padding: 5px 8px;
+.delete-btn {
+    background: #ef4444;
 }

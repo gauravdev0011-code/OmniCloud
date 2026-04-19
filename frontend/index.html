@@ -1,28 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>OmniCloud</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
+    <h1>OmniCloud Tasks 🚀</h1>
 
-    <h1>OmniCloud</h1>
-
-    <div class="card">
-        <input id="title" placeholder="Task title">
-        <input id="desc" placeholder="Description">
+    <div class="form">
+        <input id="title" placeholder="Task title" />
+        <input id="description" placeholder="Description" />
         <button onclick="createTask()">Add Task</button>
     </div>
 
-    <div class="card">
-        <h2>Tasks</h2>
-        <div id="loading">Loading...</div>
-        <div id="empty" style="display:none;">No tasks yet</div>
-        <ul id="tasks"></ul>
-    </div>
+    <p id="emptyState">No tasks yet 🚀</p>
 
+    <ul id="taskList"></ul>
 </div>
 
 <script src="app.js"></script>
