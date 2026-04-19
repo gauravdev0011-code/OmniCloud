@@ -1,17 +1,18 @@
-# Use Java 17
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-jammy
 
 # Set working directory
 WORKDIR /app
 
-# Copy everything
+# Copy backend source
 COPY backend /app
 
-# Build the project
-RUN apt-get update && apt-get install -y maven && mvn clean package
+# Install Maven and build project
+RUN apt-get update && \
+    apt-get install -y maven && \
+    mvn clean package -DskipTests
 
-# Expose port
+# Expose app port
 EXPOSE 8080
 
-# Run the jar
+# Run the Spring Boot jar
 CMD ["java", "-jar", "target/backend-1.0.0.jar"]
