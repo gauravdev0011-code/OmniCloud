@@ -1,0 +1,118 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background: black;
+  color: white;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+  position: relative;
+}
+
+/* BACKGROUND */
+.bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url('/bg.jpg') center/cover no-repeat;
+  filter: blur(40px) brightness(0.3);
+  z-index: 0;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  padding: 30px;
+  z-index: 1;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(20px);
+}
+
+.sidebar h2 {
+  color: #22c55e;
+}
+
+.sidebar p {
+  opacity: 0.7;
+  margin: 10px 0;
+}
+
+/* MAIN */
+.main {
+  flex: 1;
+  padding: 40px;
+  z-index: 1;
+}
+
+.title {
+  font-size: 60px;
+}
+
+.title span {
+  color: #22c55e;
+}
+
+.subtitle {
+  opacity: 0.6;
+  margin-bottom: 20px;
+}
+
+/* INPUT */
+.input-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.input-box input {
+  flex: 1;
+  padding: 15px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.05);
+  color: white;
+}
+
+.input-box button {
+  background: #22c55e;
+  border: none;
+  padding: 15px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* CARDS */
+.cards {
+  display: flex;
+  gap: 20px;
+}
+
+.card {
+  flex: 1;
+  padding: 30px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  transition: 0.3s;
+}
+
+/* TASK LIST */
+.task-list {
+  margin-top: 30px;
+}
+
+.task {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  margin-top: 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+}
+
+.task span.done {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
