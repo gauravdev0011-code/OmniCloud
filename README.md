@@ -1,52 +1,97 @@
-# OmniCloud
+# 🚀 OmniCloud — Real-Time Task Management Dashboard
 
-A real-time task management application built using Java Spring Boot and WebSocket.
-
----
-
-## Features
-
-* Create, update, and delete tasks
-* Real-time updates (no refresh needed)
-* Clean UI
-* REST API backend
+OmniCloud is a **full-stack real-time task management system** built with modern technologies.
+It features a **production-style dashboard UI**, **Spring Boot backend**, and **WebSocket-powered live updates**.
 
 ---
 
-## Tech Stack
+## ✨ Features
 
-**Backend**
-
-* Java 17
-* Spring Boot
-* Spring Web
-* Spring Data JPA
-* Hibernate
-* H2 Database
-* Maven
-
-**Frontend**
-
-* HTML
-* CSS
-* JavaScript
-
-**Real-time**
-
-* WebSocket
+* ⚡ Real-time updates using WebSockets (STOMP + SockJS)
+* 📊 Interactive dashboard with task statistics
+* ✅ Create, update, delete, and toggle tasks
+* 🔄 Live sync across multiple browser tabs
+* 🎨 Modern glassmorphism UI (React + CSS)
+* 📡 REST API + WebSocket hybrid architecture
 
 ---
 
-## How to Run
+## 🧱 Tech Stack
+
+### Frontend
+
+* React (Vite)
+* Framer Motion (animations)
+* STOMP.js + SockJS (WebSocket client)
+* CSS (Glassmorphism UI)
 
 ### Backend
 
+* Java + Spring Boot
+* Spring Web
+* Spring Data JPA
+* Spring WebSocket (STOMP)
+* H2 / MySQL (configurable)
+
+---
+
+## 🏗️ Architecture
+
+Client ↔ REST API ↔ Database
+    ↘ WebSocket (STOMP) ↙
+
+* REST handles CRUD operations
+* WebSocket pushes real-time updates
+* Frontend subscribes to `/topic/tasks`
+
+---
+
+## 📂 Project Structure
+
+```
+OmniCloud/
+│
+├── backend/
+│   ├── controllers/
+│   ├── services/
+│   ├── repository/
+│   ├── models/
+│   ├── websocket/
+│   └── OmniCloudApplication.java
+│
+├── frontend-react/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   └── public/
+│       └── bg.jpg
+│
+└── README.md
+```
+
+---
+
+## ⚙️ Setup Instructions
+
+### 🔹 1. Clone Repository
+
+```
+git clone https://github.com/YOUR_USERNAME/OmniCloud.git
+cd OmniCloud
+```
+
+---
+
+### 🔹 2. Run Backend
+
 ```
 cd backend
+mvn clean install
 mvn spring-boot:run
 ```
 
-Runs on:
+Server runs at:
 
 ```
 http://localhost:8080
@@ -54,49 +99,95 @@ http://localhost:8080
 
 ---
 
-### Frontend
-
-Open:
+### 🔹 3. Run Frontend
 
 ```
-frontend/index.html
+cd frontend-react
+npm install
+npm run dev
 ```
 
----
-
-## How It Works
-
-* Open frontend in 2 tabs
-* Add or edit task in one tab
-* Changes appear instantly in other tab
-
----
-
-## API
-
-* GET /api/tasks
-* POST /api/tasks
-* PUT /api/tasks/{id}
-* DELETE /api/tasks/{id}
-
----
-
-## WebSocket
+Frontend runs at:
 
 ```
-ws://localhost:8080/ws/tasks
+http://localhost:5173
 ```
 
 ---
 
-## Future Improvements
+## 🔌 API Endpoints
 
-* Authentication (JWT)
-* PostgreSQL database
-* React frontend
+| Method | Endpoint        | Description   |
+| ------ | --------------- | ------------- |
+| GET    | /api/tasks      | Get all tasks |
+| POST   | /api/tasks      | Create task   |
+| PUT    | /api/tasks/{id} | Update task   |
+| DELETE | /api/tasks/{id} | Delete task   |
 
 ---
 
-## Author
+## 🔄 WebSocket
+
+### Endpoint:
+
+```
+/ws
+```
+
+### Subscription:
+
+```
+/topic/tasks
+```
+
+### Behavior:
+
+* On create/update/delete → backend broadcasts event
+* Frontend listens → automatically refreshes UI
+
+---
+
+## 🧠 Key Concepts Demonstrated
+
+* Event-driven architecture
+* Real-time communication (WebSockets)
+* REST + WebSocket hybrid design
+* State synchronization across clients
+* Clean backend layering (Controller → Service → Repository)
+
+---
+
+## 📸 UI Preview
+
+
+---
+
+## 🚀 Future Improvements
+
+* User authentication (JWT)
+* Task categories & filters
+* Drag & drop task management
+* Persistent database (PostgreSQL)
+* Deployment (Docker + Cloud)
+
+---
+
+## 🧑‍💻 Author
 
 Gaurav Dev
+
+---
+
+## ⭐ Why This Project Matters
+
+This project demonstrates:
+
+* Full-stack engineering capability
+* Real-time systems design
+* Production-ready architecture thinking
+
+---
+
+## 📌 License
+
+MIT License
