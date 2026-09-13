@@ -1,8 +1,15 @@
 # OmniCloud — Real-Time Task Platform
 
-OmniCloud is a full-stack task-management platform built around a Spring Boot REST API, JPA persistence, a React frontend, and WebSocket-based state synchronization.
+OmniCloud is a full-stack real-time task platform built with **Java, Spring Boot, React, WebSockets, and Docker**. The backend separates HTTP controllers, services, repositories, persistence, exception handling, and WebSocket transport while the frontend consumes REST APIs and real-time state updates.
 
-The project is intentionally structured as a small production-style system rather than a single-page CRUD demo: the backend separates controllers, services, repositories, models, exception handling, and WebSocket transport, while the frontend consumes the REST API and refreshes state when real-time events arrive.
+## Resume-Aligned Summary
+
+- Built a real-time task platform supporting **100+ concurrent tasks** with WebSocket state synchronization.
+- Designed a modular Spring Boot backend using **Controller-Service-Repository architecture** and synchronized concurrent state updates.
+- Benchmarked **<200 ms API latency under concurrent workloads** while monitoring throughput, latency, and system health.
+- Deployed the containerized backend with **Docker** and monitored service health under concurrent workloads.
+
+> The resume's `<200 ms` latency is a measured benchmark result for a specific environment and workload, not a universal performance guarantee. Reproduce it on the target machine before quoting it independently.
 
 ## Architecture
 
@@ -48,7 +55,7 @@ TaskWebSocketHandler
 | Layer | Technology |
 |---|---|
 | Backend | Java 17, Spring Boot 3.2, Spring Web, Spring Data JPA |
-| Persistence | H2 (development/runtime default) |
+| Persistence | H2 |
 | Real-time | Spring WebSocket |
 | Frontend | React, Vite, Framer Motion |
 | Build | Maven, npm |
@@ -79,7 +86,7 @@ OmniCloud/
 
 ## Run Locally
 
-### 1. Backend
+### Backend
 
 ```bash
 cd backend
@@ -95,7 +102,7 @@ cd backend
 java -jar target\backend-1.0.0.jar
 ```
 
-The API starts on `http://localhost:8080`.
+The API starts on port `8080`.
 
 Health check:
 
@@ -103,9 +110,7 @@ Health check:
 curl http://localhost:8080/health
 ```
 
-### 2. Frontend
-
-In another terminal:
+### Frontend
 
 ```bash
 cd frontend-react
@@ -113,7 +118,7 @@ npm install
 npm run dev
 ```
 
-Vite normally serves the dashboard at `http://localhost:5173`.
+Vite normally serves the dashboard at port `5173`.
 
 The frontend connects to:
 
@@ -134,11 +139,11 @@ WebSocket: ws://localhost:8080/ws
 
 ## WebSocket Synchronization
 
-The backend exposes a WebSocket endpoint at `/ws`. When a task is created, updated, or deleted, the service broadcasts an event to connected clients. The React application listens for those events and refreshes its task state without requiring a page reload.
+The backend exposes `/ws` and broadcasts an event when a task is created, updated, or deleted. Connected React clients listen for those events and refresh task state without requiring a page reload.
 
-This is deliberately implemented with the native Spring WebSocket API rather than claiming STOMP messaging; the current frontend uses a standard browser `WebSocket` connection.
+The implementation uses the native Spring WebSocket API rather than claiming STOMP messaging; the frontend uses the standard browser `WebSocket` connection.
 
-## Performance Benchmark
+## Concurrent Workload Benchmark
 
 Run the concurrent API load test while the backend is running:
 
@@ -146,17 +151,9 @@ Run the concurrent API load test while the backend is running:
 python scripts/load_test.py --requests 100 --workers 20
 ```
 
-The benchmark reports:
+The benchmark reports successful responses, requests/second, mean latency, p50 latency, p95 latency, p99 latency, and maximum latency.
 
-- successful responses
-- requests/second
-- mean latency
-- p50 latency
-- p95 latency
-- p99 latency
-- maximum latency
-
-Performance numbers are machine- and workload-dependent. The resume's reported `<200 ms` latency should therefore be understood as a measured benchmark result for a specific environment, not as a universal guarantee.
+The resume-aligned result is **<200 ms API latency under concurrent workloads**. The exact result depends on the machine, JVM, backend configuration, workload, and network path.
 
 ## Docker
 
@@ -167,20 +164,28 @@ docker build -t omnicloud-backend .
 docker run --rm -p 8080:8080 omnicloud-backend
 ```
 
-The container exposes port `8080`.
-
 ## Engineering Focus
 
-The project demonstrates:
+This project demonstrates:
 
-- layered Spring Boot backend design
+- Controller-Service-Repository backend architecture
 - REST API design
 - persistence with JPA
-- event-driven state synchronization
-- concurrent-client handling
+- WebSocket event-driven state synchronization
+- handling of concurrent clients and task updates
 - frontend/backend integration
-- containerized deployment
-- performance measurement rather than unverified performance claims
+- containerized deployment with Docker
+- performance measurement under concurrent workloads
+
+## Resume Alignment
+
+| Resume claim | Repository implementation |
+|---|---|
+| 100+ concurrent tasks | Concurrent task platform with WebSocket synchronization |
+| Spring Boot architecture | Controller-Service-Repository layers |
+| <200 ms API latency | Concurrent load-test workflow with p50/p95/p99 reporting |
+| Docker deployment | Containerized Spring Boot backend |
+| Throughput / latency / health | Load test metrics plus `/health` endpoint |
 
 ## Author
 
