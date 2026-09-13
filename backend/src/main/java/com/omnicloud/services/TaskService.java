@@ -1,5 +1,6 @@
 package com.omnicloud.services;
 
+import com.omnicloud.exceptions.TaskNotFoundException;
 import com.omnicloud.models.Task;
 import com.omnicloud.repository.TaskRepository;
 import com.omnicloud.websocket.TaskWebSocketHandler;
@@ -29,18 +30,26 @@ public class TaskService {
     }
 
     public Task update(Long id, Task task) {
-        Task existing = repo.findById(id).orElseThrow();
+        Task existing = repo.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found: " + id));
+
         existing.setTitle(task.getTitle());
         existing.setCompleted(task.isCompleted());
 
         Task updated = repo.save(existing);
-
-        ws.broadcast("UPDATE:" + updated.getId() + ":" + updated.getTitle() + ":" + updated.isCompleted());
+        ws.broadcast(
+                "UPDATE:" + updated.getId() + ":" + updated.getTitle()
+                        + ":" + updated.isCompleted()
+        );
 
         return updated;
     }
 
     public void delete(Long id) {
+        if (!repo.existsById(id)) {
+            throw new TaskNotFoundException("Task not found: " + id);
+        }
+
         repo.deleteById(id);
         ws.broadcast("DELETE:" + id);
     }
