@@ -19,7 +19,9 @@ export default function App() {
     }, []);
 
     useEffect(() => {
-        fetchTasks().catch(console.error);
+        const initialLoad = setTimeout(() => {
+            fetchTasks().catch(console.error);
+        }, 0);
 
         const socket = new WebSocket("ws://localhost:8080/ws");
 
@@ -27,7 +29,10 @@ export default function App() {
             fetchTasks().catch(console.error);
         };
 
-        return () => socket.close();
+        return () => {
+            clearTimeout(initialLoad);
+            socket.close();
+        };
     }, [fetchTasks]);
 
     const addTask = async () => {
