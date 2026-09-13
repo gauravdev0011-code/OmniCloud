@@ -81,13 +81,10 @@ TaskWebSocketHandler
 OmniCloud/
 ├── backend/
 │   ├── pom.xml
-│   └── src/main/java/com/omnicloud/
-│       ├── controllers/
-│       ├── exceptions/
-│       ├── models/
-│       ├── repository/
-│       ├── services/
-│       └── websocket/
+│   ├── mvnw
+│   ├── mvnw.cmd
+│   └── .mvn/wrapper/
+│       └── maven-wrapper.properties
 ├── frontend-react/
 │   ├── package.json
 │   └── src/
@@ -103,7 +100,7 @@ OmniCloud/
 
 ```bash
 cd backend
-./mvnw clean test package
+bash ./mvnw clean test package
 java -jar target/backend-1.0.0.jar
 ```
 
@@ -147,7 +144,7 @@ WebSocket: ws://localhost:8080/ws
 | Method | Endpoint | Purpose |
 |---|---|---|
 | GET | `/api/tasks` | List tasks |
-| POST | `/api/tasks` | Create a task |
+| POST | `/api/tasks` | Create tasks |
 | PUT | `/api/tasks/{id}` | Update a task |
 | DELETE | `/api/tasks/{id}` | Delete a task |
 | GET | `/health` | Service health |
