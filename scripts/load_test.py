@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Concurrent HTTP load test for the OmniCloud REST API.
-
-The script intentionally uses only the Python standard library so the benchmark
-is reproducible without adding another project dependency.
-"""
+"""Concurrent HTTP load test for the OmniCloud REST API."""
 
 from __future__ import annotations
 
@@ -25,11 +21,15 @@ def request(method: str, url: str, payload: dict | None = None) -> tuple[float, 
 
     started = time.perf_counter()
     try:
-        with urlopen(Request(url, data=body, headers=headers, method=method), timeout=10) as response:
+        with urlopen(
+            Request(url, data=body, headers=headers, method=method),
+            timeout=10,
+        ) as response:
             response.read()
             status = response.status
     except (HTTPError, URLError) as exc:
         status = exc.code if isinstance(exc, HTTPError) else 0
+
     elapsed_ms = (time.perf_counter() - started) * 1000.0
     return elapsed_ms, status
 
@@ -41,13 +41,19 @@ def percentile(values: list[float], p: float) -> float:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Benchmark OmniCloud API latency under concurrent requests")
+    parser = argparse.ArgumentParser(
+        description="Benchmark OmniCloud API latency under concurrent requests"
+    )
     parser.add_argument("--base-url", default="http://localhost:8080")
+    parser.add_argument("--path", default="/api/tasks")
     parser.add_argument("--requests", type=int, default=100)
     parser.add_argument("--workers", type=int, default=20)
     args = parser.parse_args()
 
-    url = f"{args.base_url.rstrip('/')}/health"
+    if args.requests <= 0 or args.workers <= 0:
+        raise SystemExit("--requests and --workers must be positive")
+
+    url = f"{args.base_url.rstrip('/')}/{args.path.lstrip('/')}"
     print(f"Target: {url}")
     print(f"Requests: {args.requests}")
     print(f"Workers: {args.workers}")
@@ -57,7 +63,10 @@ def main() -> None:
     statuses: list[int] = []
 
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
-        futures = [executor.submit(request, "GET", url) for _ in range(args.requests)]
+        futures = [
+            executor.submit(request, "GET", url)
+            for _ in range(args.requests)
+        ]
         for future in as_completed(futures):
             latency, status = future.result()
             samples.append(latency)
