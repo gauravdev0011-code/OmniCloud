@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "OmniCloud API is running 🚀";
+        return "OmniCloud API is running";
     }
 }
