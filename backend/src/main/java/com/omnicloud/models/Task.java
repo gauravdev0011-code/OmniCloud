@@ -1,6 +1,9 @@
 package com.omnicloud.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class Task {
@@ -10,10 +13,10 @@ public class Task {
     private Long id;
 
     private String title;
+    private boolean completed;
 
-    private boolean completed; // ✅ THIS FIXES EVERYTHING
-
-    public Task() {}
+    public Task() {
+    }
 
     public Task(String title) {
         this.title = title;
